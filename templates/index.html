@@ -6,69 +6,123 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Village Simulation Dashboard</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .section { margin-bottom: 40px; }
-        h2 { border-bottom: 2px solid #ccc; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .tab-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .tab-button { font-size: 24px; cursor: pointer; background: none; border: none; padding: 5px 10px; }
-        .hidden { display: none; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        h1 { 
+            text-align: center; 
+            color: #333;
+        }
+        .section { 
+            margin-bottom: 40px; 
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 10px; 
+            background-color: white;
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 12px; 
+            text-align: left; 
+        }
+        th { 
+            background-color: #f2f2f2; 
+            font-weight: bold;
+        }
+        .tab-container { 
+            display: flex; 
+            justify-content: center;
+            margin-bottom: 20px; 
+        }
+        .tab-button { 
+            font-size: 16px; 
+            cursor: pointer; 
+            background-color: #f2f2f2;
+            border: none; 
+            padding: 10px 20px; 
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .tab-button:hover {
+            background-color: #e0e0e0;
+        }
+        .tab-button.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .hidden { 
+            display: none; 
+        }
     </style>
 </head>
 <body>
-    <h1>Village Simulation Dashboard</h1>
-    
-    <div class="tab-container">
-        <button class="tab-button" id="prev-tab">&lt;</button>
-        <h2 id="current-tab-title">NPCs</h2>
-        <button class="tab-button" id="next-tab">&gt;</button>
-    </div>
-    
-    <div class="section" id="npcs-section">
-        <h2>NPCs</h2>
-        <table id="npcs-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Personality</th>
-                    <th>Current Location</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-    
-    <div class="section hidden" id="interactions-section">
-        <h2>Recent Interactions</h2>
-        <table id="interactions-table">
-            <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Speaker</th>
-                    <th>Listener</th>
-                    <th>Topic</th>
-                    <th>Content</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-    
-    <div class="section hidden" id="actions-section">
-        <h2>Recent Actions</h2>
-        <table id="actions-table">
-            <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>NPC</th>
-                    <th>Location</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+    <div class="container">
+        <h1>Village Simulation Dashboard</h1>
+        
+        <div class="tab-container">
+            <button class="tab-button" data-tab="npcs">NPCs</button>
+            <button class="tab-button" data-tab="interactions">Interactions</button>
+            <button class="tab-button" data-tab="actions">Actions</button>
+        </div>
+        
+        <div class="section" id="npcs-section">
+            <h2>NPCs</h2>
+            <table id="npcs-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Personality</th>
+                        <th>Current Location</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        
+        <div class="section hidden" id="interactions-section">
+            <h2>Recent Interactions</h2>
+            <table id="interactions-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Speaker</th>
+                        <th>Listener</th>
+                        <th>Topic</th>
+                        <th>Content</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        
+        <div class="section hidden" id="actions-section">
+            <h2>Recent Actions</h2>
+            <table id="actions-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>NPC</th>
+                        <th>Location</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
     
     <script>
@@ -109,6 +163,10 @@
             eventSource.close();
         };
 
+        // Add this object to store NPC names
+        const npcNames = {};
+
+        // Modify the updateNPCs function to populate the npcNames object
         function updateNPCs(npcs) {
             console.log('Updating NPCs:', npcs);
             const npcTable = document.querySelector('#npcs-table tbody');
@@ -118,6 +176,8 @@
             }
             npcTable.innerHTML = '';
             npcs.forEach(npc => {
+                // Populate the npcNames object
+                npcNames[npc.id] = npc.name;
                 const row = `<tr>
                     <td>${npc.name}</td>
                     <td>${npc.personality}</td>
@@ -128,6 +188,7 @@
             console.log(`NPCs table updated with ${npcs.length} entries`);
         }
 
+        // Modify the updateInteractions function to use NPC names
         function updateInteractions(interactions) {
             console.log('Updating Interactions:', interactions);
             const interactionTable = document.querySelector('#interactions-table tbody');
@@ -137,10 +198,12 @@
             }
             interactionTable.innerHTML = '';
             interactions.forEach(interaction => {
+                const speakerName = npcNames[interaction.speaker_id] || interaction.speaker_id;
+                const listenerName = npcNames[interaction.listener_id] || interaction.listener_id;
                 const row = `<tr>
                     <td>${interaction.timestamp}</td>
-                    <td>${interaction.speaker_id}</td>
-                    <td>${interaction.listener_id}</td>
+                    <td>${speakerName}</td>
+                    <td>${listenerName}</td>
                     <td>${interaction.topic}</td>
                     <td>${interaction.content}</td>
                 </tr>`;
@@ -149,6 +212,7 @@
             console.log(`Interactions table updated with ${interactions.length} entries`);
         }
 
+        // Modify the updateActions function to use NPC names
         function updateActions(actions) {
             console.log('Updating Actions:', actions);
             const actionTable = document.querySelector('#actions-table tbody');
@@ -158,9 +222,10 @@
             }
             actionTable.innerHTML = '';
             actions.forEach(action => {
+                const npcName = npcNames[action.npc_id] || action.npc_id;
                 const row = `<tr>
                     <td>${action.timestamp}</td>
-                    <td>${action.npc_id}</td>
+                    <td>${npcName}</td>
                     <td>${action.location}</td>
                     <td>${action.action}</td>
                 </tr>`;
@@ -169,17 +234,20 @@
             console.log(`Actions table updated with ${actions.length} entries`);
         }
 
-        const tabs = ['npcs', 'interactions', 'actions'];
-        let currentTabIndex = 0;
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const sections = document.querySelectorAll('.section');
 
-        function updateTabVisibility() {
-            const currentTab = tabs[currentTabIndex];
-            document.getElementById('current-tab-title').textContent = 
-                currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
-            
-            tabs.forEach((tab, index) => {
-                const section = document.getElementById(`${tab}-section`);
-                if (index === currentTabIndex) {
+        function updateTabVisibility(tabName) {
+            tabButtons.forEach(button => {
+                if (button.dataset.tab === tabName) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+
+            sections.forEach(section => {
+                if (section.id === `${tabName}-section`) {
                     section.classList.remove('hidden');
                 } else {
                     section.classList.add('hidden');
@@ -187,18 +255,14 @@
             });
         }
 
-        document.getElementById('prev-tab').addEventListener('click', () => {
-            currentTabIndex = (currentTabIndex - 1 + tabs.length) % tabs.length;
-            updateTabVisibility();
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                updateTabVisibility(button.dataset.tab);
+            });
         });
 
-        document.getElementById('next-tab').addEventListener('click', () => {
-            currentTabIndex = (currentTabIndex + 1) % tabs.length;
-            updateTabVisibility();
-        });
-
-        // Initialize tab visibility
-        updateTabVisibility();
+        // Initialize the first tab as active
+        updateTabVisibility('npcs');
 
         // Add this to check if tables exist on page load
         document.addEventListener('DOMContentLoaded', function() {
