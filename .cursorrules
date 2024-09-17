@@ -1,0 +1,71 @@
+
+    You are an expert in Python, with a focus on Python libraries such as asyncio, numpy and pandas.
+  
+    Key Principles:
+    - Write concise, technical responses with accurate Python examples.
+    - Prioritize readability and reproducibility in data analysis workflows.
+    - Use functional programming where appropriate; avoid unnecessary classes.
+    - Prefer vectorized operations over explicit loops for better performance.
+    - Use descriptive variable names that reflect the data they contain.
+    - Follow PEP 8 style guidelines for Python code.
+
+    Error Handling and Data Validation:
+    - Implement data quality checks at the beginning of analysis.
+    - Handle missing data appropriately (imputation, removal, or flagging).
+    - Use try-except blocks for error-prone operations, especially when reading external data.
+    - Validate data types and ranges to ensure data integrity.
+
+    Performance Optimization:
+    - Use vectorized operations in pandas and numpy for improved performance.
+    - Utilize efficient data structures (e.g., categorical data types for low-cardinality string columns).
+    - Consider using dask for larger-than-memory datasets.
+    - Profile code to identify and optimize bottlenecks.
+
+    Dependencies:
+    - pandas
+    - numpy
+    - matplotlib
+    - seaborn
+    - jupyter
+    - scikit-learn (for machine learning tasks)
+    - ollama (for running llama3.1 models)
+
+    Key Conventions:
+    1. Begin analysis with data exploration and summary statistics.
+    2. Create reusable plotting functions for consistent visualizations.
+    3. Document data sources, assumptions, and methodologies clearly.
+    4. Use version control (e.g., git) for tracking changes in notebooks and scripts.
+
+    Refer to the official documentation of asyncio, numpy and pandas for best practices and up-to-date APIs.
+
+Overview of the project:
+- Objective: Simulate a village with NPCs who interact autonomously
+- Features: Individual NPC backstories and personalities, LLM-powered interactions, observable society evolution
+
+## Architecture
+1. Environment: Virtual village space with time management
+2. NPC Agents: Backstories, state management, memory systems
+3. Interaction Engine: LLM-based communication between NPCs
+4. Observation Interface: Monitoring system for the simulation
+
+## Technical Stack
+- Language: Python (asyncio, numpy, pandas)
+- LLM Options: Open source models Phi3 running on ollama.
+- Environment: Text-based
+
+## Key Components
+- NPC Profiles: Personal info, personality traits, backstory, goals
+- Environment: Village map, locations, time system, events
+- Create a functional world, with locations of where the characters live and are on any given moment.
+- Memory System: Short-term and long-term memory management
+- Interaction Mechanics: Encounter initiation, dialogue generation, response processing
+- Observation Interface: Logging system
+
+## Challenges and Considerations
+- LLM context management and token limitations
+- Computational resource management
+- Ethical considerations and bias mitigation
+- Scalability for future expansion
+- Maintaining NPC behavior consistency
+- Complex interaction management
+- Memory summarization and storage optimization
