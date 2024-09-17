@@ -12,10 +12,19 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
+        .tab-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .tab-button { font-size: 24px; cursor: pointer; background: none; border: none; padding: 5px 10px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <h1>Village Simulation Dashboard</h1>
+    
+    <div class="tab-container">
+        <button class="tab-button" id="prev-tab">&lt;</button>
+        <h2 id="current-tab-title">NPCs</h2>
+        <button class="tab-button" id="next-tab">&gt;</button>
+    </div>
     
     <div class="section" id="npcs-section">
         <h2>NPCs</h2>
@@ -31,7 +40,7 @@
         </table>
     </div>
     
-    <div class="section" id="interactions-section">
+    <div class="section hidden" id="interactions-section">
         <h2>Recent Interactions</h2>
         <table id="interactions-table">
             <thead>
@@ -47,7 +56,7 @@
         </table>
     </div>
     
-    <div class="section" id="actions-section">
+    <div class="section hidden" id="actions-section">
         <h2>Recent Actions</h2>
         <table id="actions-table">
             <thead>
@@ -159,6 +168,37 @@
             });
             console.log(`Actions table updated with ${actions.length} entries`);
         }
+
+        const tabs = ['npcs', 'interactions', 'actions'];
+        let currentTabIndex = 0;
+
+        function updateTabVisibility() {
+            const currentTab = tabs[currentTabIndex];
+            document.getElementById('current-tab-title').textContent = 
+                currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+            
+            tabs.forEach((tab, index) => {
+                const section = document.getElementById(`${tab}-section`);
+                if (index === currentTabIndex) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+        }
+
+        document.getElementById('prev-tab').addEventListener('click', () => {
+            currentTabIndex = (currentTabIndex - 1 + tabs.length) % tabs.length;
+            updateTabVisibility();
+        });
+
+        document.getElementById('next-tab').addEventListener('click', () => {
+            currentTabIndex = (currentTabIndex + 1) % tabs.length;
+            updateTabVisibility();
+        });
+
+        // Initialize tab visibility
+        updateTabVisibility();
 
         // Add this to check if tables exist on page load
         document.addEventListener('DOMContentLoaded', function() {
