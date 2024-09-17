@@ -1,0 +1,176 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Village Simulation Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin-bottom: 40px; }
+        h2 { border-bottom: 2px solid #ccc; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Village Simulation Dashboard</h1>
+    
+    <div class="section" id="npcs-section">
+        <h2>NPCs</h2>
+        <table id="npcs-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Personality</th>
+                    <th>Current Location</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    
+    <div class="section" id="interactions-section">
+        <h2>Recent Interactions</h2>
+        <table id="interactions-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Speaker</th>
+                    <th>Listener</th>
+                    <th>Topic</th>
+                    <th>Content</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    
+    <div class="section" id="actions-section">
+        <h2>Recent Actions</h2>
+        <table id="actions-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>NPC</th>
+                    <th>Location</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    
+    <script>
+        const eventSource = new EventSource('/sse');
+
+        eventSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log('Received update:', data);
+            if (!data) {
+                console.error('Received empty update');
+                return;
+            }
+            
+            if (data.npcs) {
+                console.table(data.npcs);
+                updateNPCs(data.npcs);
+            } else {
+                console.warn('No NPCs data in update');
+            }
+            
+            if (data.interactions) {
+                console.table(data.interactions);
+                updateInteractions(data.interactions);
+            } else {
+                console.warn('No interactions data in update');
+            }
+            
+            if (data.actions) {
+                console.table(data.actions);
+                updateActions(data.actions);
+            } else {
+                console.warn('No actions data in update');
+            }
+        };
+
+        eventSource.onerror = function(error) {
+            console.error('EventSource failed:', error);
+            eventSource.close();
+        };
+
+        function updateNPCs(npcs) {
+            console.log('Updating NPCs:', npcs);
+            const npcTable = document.querySelector('#npcs-table tbody');
+            if (!npcTable) {
+                console.error('NPC table not found');
+                return;
+            }
+            npcTable.innerHTML = '';
+            npcs.forEach(npc => {
+                const row = `<tr>
+                    <td>${npc.name}</td>
+                    <td>${npc.personality}</td>
+                    <td>${npc.current_location}</td>
+                </tr>`;
+                npcTable.innerHTML += row;
+            });
+            console.log(`NPCs table updated with ${npcs.length} entries`);
+        }
+
+        function updateInteractions(interactions) {
+            console.log('Updating Interactions:', interactions);
+            const interactionTable = document.querySelector('#interactions-table tbody');
+            if (!interactionTable) {
+                console.error('Interactions table not found');
+                return;
+            }
+            interactionTable.innerHTML = '';
+            interactions.forEach(interaction => {
+                const row = `<tr>
+                    <td>${interaction.timestamp}</td>
+                    <td>${interaction.speaker_id}</td>
+                    <td>${interaction.listener_id}</td>
+                    <td>${interaction.topic}</td>
+                    <td>${interaction.content}</td>
+                </tr>`;
+                interactionTable.innerHTML += row;
+            });
+            console.log(`Interactions table updated with ${interactions.length} entries`);
+        }
+
+        function updateActions(actions) {
+            console.log('Updating Actions:', actions);
+            const actionTable = document.querySelector('#actions-table tbody');
+            if (!actionTable) {
+                console.error('Actions table not found');
+                return;
+            }
+            actionTable.innerHTML = '';
+            actions.forEach(action => {
+                const row = `<tr>
+                    <td>${action.timestamp}</td>
+                    <td>${action.npc_id}</td>
+                    <td>${action.location}</td>
+                    <td>${action.action}</td>
+                </tr>`;
+                actionTable.innerHTML += row;
+            });
+            console.log(`Actions table updated with ${actions.length} entries`);
+        }
+
+        // Add this to check if tables exist on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            ['npcs-table', 'interactions-table', 'actions-table'].forEach(id => {
+                const table = document.querySelector(`#${id} tbody`);
+                if (!table) {
+                    console.error(`Table with id '${id}' not found`);
+                } else {
+                    console.log(`Table with id '${id}' found`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
